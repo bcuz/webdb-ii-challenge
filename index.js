@@ -12,6 +12,17 @@ server.use(express.json());
 server.use(helmet());
 
 // endpoints here
+
+server.get('/api/zoos', async (req, res) => {
+  db('zoos')
+  .then(zoos => {
+    res.json(zoos)
+  })
+  .catch(err => {
+    res.status(500).json({ error: "Error retrieving the zoos" });
+  });
+});
+
 server.post('/api/zoos', (req, res) => {
   const zoo = req.body;
 
