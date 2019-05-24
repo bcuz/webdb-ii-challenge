@@ -55,6 +55,26 @@ server.get('/api/zoos/:id', async (req, res) => {
     });
 });
 
+server.delete('/api/zoos/:id', async (req, res) => {
+  const { id } = req.params;
+
+  db('zoos')
+    .where({ id }) // or .where(id, '=', id)
+    .del()
+    .then(count => {
+
+      if (count) {
+        res.json(count);
+      } else {
+        res.status(404).json({ message: 'zoo not found' });
+      } 
+      
+    })
+    .catch(err => {
+      res.status(500).json({ error: 'Error removing the user'});
+    });
+});
+
 const port = 5001;
 server.listen(port, function() {
   console.log(`\n=== Web API Listening on http://localhost:${port} ===\n`);
