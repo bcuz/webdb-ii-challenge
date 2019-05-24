@@ -75,6 +75,31 @@ server.delete('/api/zoos/:id', async (req, res) => {
     });
 });
 
+
+server.put('/api/zoos/:id', async (req, res) => {
+  const changes = req.body;
+  const { id } = req.params;  
+
+  if(Object.keys(changes).length === 0){
+    return res.status(400).json({message: "missing post data"});
+  }
+
+  db('zoos')
+      .where({ id })
+      .update(changes)
+      .then(count => {
+
+        if (count) {
+          res.json(count);
+        } else {
+          res.status(404).json({ message: 'zoo not found' });
+        } 
+      })
+      .catch(err => {
+        res.status(500).json({ error: 'Error updating the zoo'});
+      });
+});
+
 const port = 5001;
 server.listen(port, function() {
   console.log(`\n=== Web API Listening on http://localhost:${port} ===\n`);
