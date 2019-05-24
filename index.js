@@ -26,13 +26,32 @@ server.get('/api/zoos', async (req, res) => {
 server.post('/api/zoos', (req, res) => {
   const zoo = req.body;
 
-  db.insert(zoo)
-    .into('zoos')
+  db('zoos')
+    .insert(zoo)
     .then(ids => {
       res.status(201).json(ids[0]);
     })
     .catch(err => {
       res.status(500).json({ error: "Error adding the zoo" });
+    });
+});
+
+server.get('/api/zoos/:id', async (req, res) => {
+  const { id } = req.params;
+
+  db('zoos')
+    .where({ id })
+    .first()
+    .then(zoo => {
+
+      if (zoo) {
+        res.status(200).json(zoo);
+      } else {
+        res.status(404).json({ message: 'zoo not found' });
+      }      
+    })
+    .catch(err => {
+      res.status(500).json({ error: 'Error retrieving the user'});
     });
 });
 
