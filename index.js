@@ -14,65 +14,72 @@ server.use(helmet());
 // endpoints here
 
 server.get('/api/zoos', async (req, res) => {
-  db('zoos')
-  .then(zoos => {
-    res.json(zoos)
-  })
-  .catch(err => {
-    res.status(500).json({ error: "Error retrieving the zoos" });
-  });
+  try {
+    const zoos = await db('zoos')
+    
+    res.status(200).json(zoos);
+  } catch (error) {
+    // log error to server
+    console.log(error);
+    res.status(500).json({
+      message: 'Error retrieving the zoos',
+      // message: error.message,
+    });
+  }
+  
 });
 
-server.post('/api/zoos', (req, res) => {
+server.post('/api/zoos', async (req, res) => {
   const zoo = req.body;
 
-  db('zoos')
-    .insert(zoo)
-    .then(ids => {
-      res.status(201).json(ids[0]);
-    })
-    .catch(err => {
-      res.status(500).json({ error: "Error adding the zoo" });
+  try {
+    const ids = await db('zoos').insert(zoo)
+    
+    res.status(200).json(ids[0]);
+  } catch (error) {
+    // log error to server
+    console.log(error);
+    res.status(500).json({
+      message: 'Error adding the zoos',
+      // message: error.message,
     });
+  }
 });
 
 server.get('/api/zoos/:id', async (req, res) => {
   const { id } = req.params;
 
-  db('zoos')
-    .where({ id })
-    .first()
-    .then(zoo => {
-
-      if (zoo) {
-        res.status(200).json(zoo);
-      } else {
-        res.status(404).json({ message: 'zoo not found' });
-      }      
-    })
-    .catch(err => {
-      res.status(500).json({ error: 'Error retrieving the user'});
-    });
+  try {
+    const zoo = await db('zoos').where({ id }).first()
+    
+    if (zoo) {
+      res.status(200).json(zoo);
+    } else {
+      res.status(404).json({ message: 'zoo not found' });
+    }  
+  } catch (error) {
+    // log error to server
+    console.log(error);
+    res.status(500).json({ error: 'Error retrieving the user'});
+  }
 });
 
 server.delete('/api/zoos/:id', async (req, res) => {
   const { id } = req.params;
 
-  db('zoos')
-    .where({ id }) // or .where(id, '=', id)
-    .del()
-    .then(count => {
-
-      if (count) {
-        res.json(count);
-      } else {
-        res.status(404).json({ message: 'zoo not found' });
-      } 
-      
-    })
-    .catch(err => {
-      res.status(500).json({ error: 'Error removing the user'});
-    });
+  try {
+    const count = await db('zoos').where({ id }).del()
+    
+    if (count) {
+      res.json(count);
+    } else {
+      res.status(404).json({ message: 'zoo not found' });
+    } 
+  } catch (error) {
+    // log error to server
+    console.log(error);
+    res.status(500).json({ error: 'Error removing the user'});
+  }
 });
 
 
@@ -84,20 +91,19 @@ server.put('/api/zoos/:id', async (req, res) => {
     return res.status(400).json({message: "missing post data"});
   }
 
-  db('zoos')
-      .where({ id })
-      .update(changes)
-      .then(count => {
-
-        if (count) {
-          res.json(count);
-        } else {
-          res.status(404).json({ message: 'zoo not found' });
-        } 
-      })
-      .catch(err => {
-        res.status(500).json({ error: 'Error updating the zoo'});
-      });
+  try {
+    const count = await db('zoos').where({ id }).update(changes)
+    
+    if (count) {
+      res.json(count);
+    } else {
+      res.status(404).json({ message: 'zoo not found' });
+    } 
+  } catch (error) {
+    // log error to server
+    console.log(error);
+    res.status(500).json({ error: 'Error updating the zoo'});
+  }
 });
 
 const port = 5001;
