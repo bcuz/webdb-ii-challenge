@@ -1,4 +1,6 @@
 # Logs
+data/lambda.sqlite3
+note
 logs
 *.log
 npm-debug.log*
