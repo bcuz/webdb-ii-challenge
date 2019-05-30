@@ -35,7 +35,7 @@ server.post('/api/zoos', async (req, res) => {
   try {
     const ids = await db('zoos').insert(zoo)
     
-    res.status(200).json(ids[0]);
+    res.status(201).json(ids[0]);
   } catch (error) {
     // log error to server
     console.log(error);
